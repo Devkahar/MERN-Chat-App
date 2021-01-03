@@ -14,7 +14,7 @@ app.get('/',(req,res)=>{
 
 app.post('/api/register',userSignIn);
 app.get('/api/auth',isUserAuthentic);
-app.get('/api/signin',signIn);
+app.post('/api/signin',signIn);
 app.listen(2000,()=>{
     console.log('listning on port 2000');
 })
