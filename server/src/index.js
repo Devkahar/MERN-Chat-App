@@ -17,7 +17,7 @@ app.post('/api/register',userSignIn);
 app.get('/api/auth',isUserAuthentic);
 app.post('/api/signin',signIn);
 app.post('/api/room',createRoom);
-
+app.post('/api/addtoroom',addParticipantsInRoom);
 app.listen(2000,()=>{
     console.log('listning on port 2000');
 })

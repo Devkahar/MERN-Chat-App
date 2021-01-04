@@ -1,22 +1,18 @@
 const Room = require('../model/rooms');
 const bcrypt = require('bcrypt');
 const User = require('../model/user');
+const { updateOne } = require('../model/user');
+const { addRoomToUser } = require('../util/addRoomToUser');
 
 exports.createRoom = async (req,res)=>{
     const {userId,roomName,roomId,password,participants} = req.body;
-    const user = await User.findOne({_id: userId});
-    const roomArray = user.rooms;
     bcrypt.hash(password,10)
     .then((_password)=>{
         const _room = new Room({roomName,roomId,password: _password,participants,creator: userId});
         _room.save((error,room)=>{
             if(error) return res.status(400).json({error, message:"Failed TO Create Room"});
             if (room) {
-                roomArray.push({roomID: room._id})
-                User.findOneAndUpdate({_id:userId},{rooms: roomArray},(error,res)=>{
-                    if(error) console.log(error);
-                    else console.log(res);
-                })
+                addRoomToUser(userId,room._id);
                 return res.status(201).json({
                     room,
                     message: "Room Created Successfully" 
@@ -27,3 +23,33 @@ exports.createRoom = async (req,res)=>{
     .catch(error => console.log(error));
 }
 
+exports.addParticipantsInRoom = async(req,res)=>{
+    const {roomId,participants} = req.body;
+
+    try {
+        Room.findOne({roomId}).exec((error,rooms)=>{
+            if(rooms){
+                
+                const participantsArray = rooms.participants;
+                participants.map(e =>{
+                    addRoomToUser(e.user,rooms._id);
+                    console.log(e.user);
+                    let should = participantsArray.filter(_e => _e.user.toString() === e.user.toString());
+                    console.log("Should",should);
+                    if(should.length === 0){
+                        participantsArray.push(e);
+                    }
+                })
+                Room.updateOne({roomId},{participants: participantsArray}).exec((error,data)=>{
+                    if (data) return res.status(201).json({message:"User Added Success Fully"});
+                    console.log(data);
+                    if(error) return res.status(400).json({error,message:"Failure"});
+                })
+            }
+            if(error) return res.status(400).json({error,message:"Failure"});
+        
+        })
+    } catch (error){
+        console.log(error);
+    }
+}
