@@ -21,7 +21,15 @@ const userSchema = new  mongoose.Schema({
     password:{
         type: String,
         required: true,
-    }
+    },
+    userImg: {
+        type: String
+    },
+    rooms:[
+        {roomID: {type: mongoose.Schema.Types.ObjectId, ref:'Room', required: true}},
+    ],
+
+
 })
 
 

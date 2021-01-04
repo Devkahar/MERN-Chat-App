@@ -2,8 +2,8 @@ const express = require('express')
 const app = express();
 const cors = require('cors')
 const env = require('dotenv');
-const {setupWebSocketServer} = require('./websocket');
 const { userSignIn, isUserAuthentic, signIn } = require('./controller/user');
+const { createRoom, addParticipantsInRoom } = require('./controller/room');
 env.config();
 require('./db/connnect')
 app.use(express.json());
@@ -16,7 +16,8 @@ app.get('/',(req,res)=>{
 app.post('/api/register',userSignIn);
 app.get('/api/auth',isUserAuthentic);
 app.post('/api/signin',signIn);
+app.post('/api/room',createRoom);
+
 app.listen(2000,()=>{
     console.log('listning on port 2000');
 })
-setupWebSocketServer();
