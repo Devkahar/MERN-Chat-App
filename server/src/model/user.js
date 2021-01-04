@@ -22,13 +22,12 @@ const userSchema = new  mongoose.Schema({
         type: String,
         required: true,
     },
-    userImg: {
+    userImg:{
         type: String
     },
     rooms:[
         {roomID: {type: mongoose.Schema.Types.ObjectId, ref:'Room', required: true}},
     ],
-
 
 })
 module.exports = mongoose.model("User",userSchema);

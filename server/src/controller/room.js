@@ -1,6 +1,5 @@
 const Room = require('../model/rooms');
 const bcrypt = require('bcrypt');
-const User = require('../model/user');
 const { updateOne } = require('../model/user');
 const { addRoomToUser } = require('../util/addRoomToUser');
 
@@ -25,7 +24,6 @@ exports.createRoom = async (req,res)=>{
 
 exports.addParticipantsInRoom = async(req,res)=>{
     const {roomId,participants} = req.body;
-
     try {
         Room.findOne({roomId}).exec((error,rooms)=>{
             if(rooms){
@@ -49,7 +47,7 @@ exports.addParticipantsInRoom = async(req,res)=>{
             if(error) return res.status(400).json({error,message:"Failure"});
         
         })
-    } catch (error){
+    }catch (error){
         console.log(error);
     }
 }

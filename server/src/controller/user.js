@@ -18,20 +18,6 @@ exports.userSignIn = (req,res)=>{
     .catch(error => console.log(error))
 }
 
-exports.isUserAuthentic = (req,res,next)=>{
-    const token =  req.headers.authorization;
-    console.log(token);
-    if(token) {
-        jwt.verify(token.split(' ')[1],process.env.JWT_CLIENT_SECRATE, (error,user)=>{
-            // if(user) next();
-            if(user) return(res.status(200).json({token}));
-            if(error) return res.status(400).json(error);
-        })
-    }
-
-    return res.status(400).json('Token is Required');
-}
-
 exports.signIn = (req,res) =>{
     const {email,password} = req.body;
     User.findOne({email}).exec(async (error,user)=>{
