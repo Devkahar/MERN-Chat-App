@@ -2,7 +2,7 @@ const express = require('express')
 const app = express();
 const cors = require('cors')
 const env = require('dotenv');
-const { userSignIn, signIn } = require('./controller/user');
+const {  signIn, userSignup } = require('./controller/user');
 const { createRoom, addParticipantsInRoom } = require('./controller/room');
 const { addMessage, getMessage } = require('./controller/message');
 const { isUserAuthentic } = require('./middlewares/authMiddleware');
@@ -13,7 +13,7 @@ app.use(cors())
 app.get('/',(req,res)=>{
     res.send('ok')
 })
-app.post('/api/register',userSignIn);
+app.post('/api/register',userSignup);
 // app.get('/api/auth',isUserAuthentic);
 app.post('/api/signin',signIn);
 app.post('/api/room',createRoom);
