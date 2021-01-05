@@ -25,7 +25,7 @@ exports.signIn = (req,res) =>{
             const isAuth = await bcrypt.compare(password,user.password);
             if(isAuth){
                 const token = jwt.sign({id: user._id},process.env.JWT_CLIENT_SECRATE,{expiresIn: 86400});
-                return res.status(200).json({auth: true,token})
+                return res.status(200).json({user,token})
             }
             if(!isAuth){
                 return res.status(401).json({message: "invalid Password"})
