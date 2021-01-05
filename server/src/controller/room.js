@@ -2,6 +2,7 @@ const Room = require('../model/rooms');
 const bcrypt = require('bcrypt');
 const { updateOne } = require('../model/user');
 const { addRoomToUser } = require('../util/addRoomToUser');
+const MessageBox = require('../model/messageBox');
 
 exports.createRoom = async (req,res)=>{
     const {userId,roomName,roomId,password,participants} = req.body;
@@ -12,6 +13,7 @@ exports.createRoom = async (req,res)=>{
             if(error) return res.status(400).json({error, message:"Failed TO Create Room"});
             if (room) {
                 addRoomToUser(userId,room._id);
+                const messageBox = new MessageBox({parentId: room._id}).save();
                 return res.status(201).json({
                     room,
                     message: "Room Created Successfully" 

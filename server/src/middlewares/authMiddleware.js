@@ -14,7 +14,6 @@ exports.isUserAuthentic = (req,res,next)=>{
         })
     }
     else{
-
         return res.status(400).json('Token is Required');
     }
 }

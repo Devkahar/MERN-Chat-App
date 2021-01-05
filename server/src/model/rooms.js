@@ -18,13 +18,6 @@ const roomSchema = new mongoose.Schema({
         {user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}},
     ],
     creator: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-    messageBox:[
-        {
-            date: {type: String},
-            author: {type: mongoose.Schema.Types.ObjectId, ref: 'User',required: true},
-            message: {type: String}
-        }
-    ],
 });
 
 module.exports = mongoose.model("Room",roomSchema);
