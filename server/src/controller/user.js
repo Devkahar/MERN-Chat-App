@@ -24,13 +24,21 @@ exports.signIn = (req,res) =>{
         if(user){
             const isAuth = await bcrypt.compare(password,user.password);
             if(isAuth){
+                const {firstName,lastName,email,rooms} = user;
                 const token = jwt.sign({id: user._id},process.env.JWT_CLIENT_SECRATE,{expiresIn: 86400});
-                return res.status(200).json({user,token})
+                return res.status(200).json({user:{firstName,lastName,email,rooms},token})
             }
             if(!isAuth){
                 return res.status(401).json({message: "invalid Password"})
             }
         }
     })
-    
+}
+
+exports.getUserRooms = (req,res)=>{
+    const {userId} = req.body;
+    User.findOne({_id: userId}).exec((error,user)=>{
+        if(user) res.status(200).json({rooms: user.rooms});
+        if(error) res.status(400).json({error});
+    })
 }

@@ -27,6 +27,5 @@ const userSchema = new  mongoose.Schema({
     rooms:[
         {roomID: {type: mongoose.Schema.Types.ObjectId, ref:'Room', required: true}},
     ],
-
 })
 module.exports = mongoose.model("User",userSchema);

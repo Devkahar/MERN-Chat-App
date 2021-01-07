@@ -7,7 +7,7 @@ const User = require("../model/user");
 const user = require("../model/user");
 
 exports.createRoom = async (req, res) => {
-  const { userId, roomName, roomId, password, participants } = req.body;
+  const { userId, roomName, roomId, password } = req.body;
   bcrypt
     .hash(password, 10)
     .then((_password) => {
@@ -15,7 +15,7 @@ exports.createRoom = async (req, res) => {
         roomName,
         roomId,
         password: _password,
-        participants,
+        participants: [{user: userId}],
         creator: userId,
       });
       _room.save((error, room) => {
@@ -68,15 +68,36 @@ exports.addParticipantsInRoom = async (req, res) => {
   });
 };
 
-exports.getRoomList = (req, res) => {
-    const {roomID} = req.body;
-    Room.findOne({_id: roomID}).populate('creator').exec((error,room)=>{
-        if(error) return res.status(400).json({message:'Invalid RoomId'});
-        if(room){
-            const { roomName,roomId,participants} = room;
-            const {firstName,lastName} = room.creator;
-            console.log(participants,roomName,roomId,firstName,lastName)
-            return res.status(200).json({participants,roomName,roomId,admin:{firstName,lastName}});
-        }
+const  roomDetails =  (roomID)=>{
+
+  return new Promise((resolve,reject)=>{
+    Room.findOne({_id: roomID}).populate('creator')
+    .exec((error,data)=>{
+      if(error) return reject(error);
+      if(data){
+        const {roomName,roomId,participants} = data;
+        const {firstName,lastName} = data.creator;
+        //console.log(data);
+        return resolve({roomName,roomId,participants,author:{firstName,lastName}})
+      }
     })
+  })
+}
+
+exports.getRoomList = (req, res) => {
+    const {roomIDArray} = req.body;
+    //console.log(req.body);
+    if(roomIDArray){
+
+      const roomArray = [];
+      roomIDArray.map(e =>{
+        roomArray.push(roomDetails(e.roomID));
+      })
+  
+      Promise.all(roomArray)
+      .then(data => {
+        return res.status(200).json({roomDetails: data})})
+      .catch(error => res.status(400).json({message: "Something went wrong",error}))
+    }
+    
 };
