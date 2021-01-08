@@ -54,7 +54,7 @@ exports.addParticipantsInRoom = async (req, res) => {
         }
       });
       Room.updateOne({ roomId }, { participants: participantsArray }).exec(
-        (error, data) => {
+        (error,data) => {
           if (data)
             return res
               .status(201)
@@ -75,10 +75,10 @@ const  roomDetails =  (roomID)=>{
     .exec((error,data)=>{
       if(error) return reject(error);
       if(data){
-        const {roomName,roomId,participants} = data;
+        const {roomName,roomId,participants,password} = data;
         const {firstName,lastName} = data.creator;
         //console.log(data);
-        return resolve({roomName,roomId,participants,author:{firstName,lastName}})
+        return resolve({roomName,roomId,participants,author:{firstName,lastName},password})
       }
     })
   })

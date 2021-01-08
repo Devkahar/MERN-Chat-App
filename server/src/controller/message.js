@@ -10,7 +10,7 @@ const pusher = new Pusher({
 });
 
 exports.addMessage = (req,res)=>{
-    const {message,userId,roomId,name} = req.body;
+    const {message,userId,id,name} = req.body;
     const changeStream = MessageBox.watch();
     changeStream.on("change",(change)=>{
         console.log("Here was Change",change);
@@ -25,7 +25,7 @@ exports.addMessage = (req,res)=>{
             console.log("Error");
         }
     })
-    MessageBox.updateOne({parentId: roomId},{
+    MessageBox.updateOne({parentId: id},{
         $push:{
             messageBox:{
                 date: new Date().toUTCString(),
@@ -42,10 +42,9 @@ exports.addMessage = (req,res)=>{
 }
 
 exports.getMessage = (req,res)=>{
-    const {roomId, } = req.body;
-    MessageBox.findOne({parentId: roomId}).populate('messageBox').exec((error,messages)=>{
-        if (messages) console.log(messages);
-        if(error) console.log(error);
-        res.send("okk");
+    const {id} = req.body;
+    MessageBox.findOne({parentId: id}).exec((error,messages)=>{
+        if (messages) res.status(200).json({messages: messages.messageBox})
+        if(error) return res.status(400).json({error});
     })
 }
