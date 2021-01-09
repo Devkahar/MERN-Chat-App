@@ -11,21 +11,8 @@ const pusher = new Pusher({
 
 exports.addMessage = (req,res)=>{
     const {message,userId,id,name} = req.body;
-    const changeStream = MessageBox.watch();
-    changeStream.on("change",(change)=>{
-        console.log("Here was Change",change);
-        if(change.operationType === 'update'){
-            const messageKeyArray = Object.keys(change.updateDescription.updatedFields)[0];
-            const messageDetails =  change.updateDescription.updatedFields[messageKeyArray];
-            console.log("message details",messageDetails);
-            pusher.trigger("message", "inserted", {
-                ...messageDetails
-            });
-        }else{
-            console.log("Error");
-        }
-    })
-    MessageBox.updateOne({parentId: id},{
+    const {roomId} = req.params;
+    MessageBox.findOneAndUpdate({parentId: id},{
         $push:{
             messageBox:{
                 date: new Date().toUTCString(),
@@ -34,11 +21,31 @@ exports.addMessage = (req,res)=>{
                 message
             }
         }
-    })
+    },{new: true})
     .exec((error,_message)=>{
-        if(error) return res.status(400).json({error});
-        if(_message) return res.status(201).json({message: "message Created"});
+        if(error) res.status(400).json({error});
+
+        if(_message) res.status(201).json({message: "message Created",m: _message});
     })
+
+
+    let once1= true;
+    const changeStream = MessageBox.watch();
+    changeStream.on("change",(change)=>{
+        console.log("Here was Change",change);
+        if(change.operationType === 'update' && once1){
+            once1 = false;
+            const messageKeyArray = Object.keys(change.updateDescription.updatedFields)[0];
+            const messageDetails =  change.updateDescription.updatedFields[messageKeyArray];
+            console.log("message details",messageDetails);
+            pusher.trigger(`message-${roomId}`, "inserted", {
+                roomId
+            });
+        }else{
+            console.log("Error");
+        }
+    })
+    
 }
 
 exports.getMessage = (req,res)=>{

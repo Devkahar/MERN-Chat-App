@@ -24,12 +24,12 @@ exports.signIn = (req,res) =>{
         if(user){
             const isAuth = await bcrypt.compare(password,user.password);
             if(isAuth){
-                const {firstName,lastName,email,rooms} = user;
+                const {firstName,lastName,email,rooms,_id} = user;
                 const token = jwt.sign({id: user._id},process.env.JWT_CLIENT_SECRATE,{expiresIn: 86400});
-                return res.status(200).json({user:{firstName,lastName,email,rooms},token})
+                return res.status(200).json({user:{firstName,lastName,email,rooms,_id},token})
             }
             if(!isAuth){
-                return res.status(401).json({message: "invalid Password"})
+                return res.status(401).json({message: "invalid Password"});
             }
         }
     })

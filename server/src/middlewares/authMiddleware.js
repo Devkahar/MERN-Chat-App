@@ -20,12 +20,16 @@ exports.isUserAuthentic = (req,res,next)=>{
 }
 
 exports.isRoomUserAuthentic = (req,res,next)=>{
-    const {roomId,userId} = req.body;
-
+    const {userId} = req.body;
+    const {roomId} = req.params;
+        console.log(req.params.roomId);
+        console.log(req.body);
+        
     Rooms.findOne({roomId}).exec(async (error,room)=>{
         if(error) return res.status(400).json({error: "Invalid Room Id"});
         if(room){
             let isMember = false;
+            console.log("yyy");
             room.participants.map(e =>{ 
                 if (e.user.toString() === userId.toString()){
                     req.body.id = room._id;
