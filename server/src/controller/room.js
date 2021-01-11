@@ -1,10 +1,8 @@
 const Room = require("../model/rooms");
 const bcrypt = require("bcrypt");
-const { updateOne, findById } = require("../model/user");
 const { addRoomToUser } = require("../util/addRoomToUser");
 const MessageBox = require("../model/messageBox");
-const User = require("../model/user");
-const user = require("../model/user");
+
 
 exports.createRoom = async (req, res) => {
   const { userId, roomName, roomId, password } = req.body;
@@ -75,13 +73,63 @@ const  roomDetails =  (roomID)=>{
     .exec((error,data)=>{
       if(error) return reject(error);
       if(data){
-        const {roomName,roomId,participants,password} = data;
+        const {roomName,roomId,participants} = data;
         const {firstName,lastName} = data.creator;
         //console.log(data);
-        return resolve({roomName,roomId,participants,author:{firstName,lastName},password})
+        return resolve({roomName,roomId,participants,author:{firstName,lastName}})
       }
     })
   })
+}
+
+exports.getGlobalRooms = (req,res)=>{
+  let roomArray = [];
+  const {userRooms} = req.body;
+  Room.find({}).exec((error,rooms)=>{
+    if(rooms){
+      // let prev = null;
+      // rooms.forEach(e =>{
+      //   if(userRooms.length >0){
+      //     userRooms.map(ur =>{
+      //       if(ur.roomID.toString() !== e._id.toString() && prev !== e._id.toString()){
+      //         roomArray.push(roomDetails(e._id));
+      //         prev = e._id.toString();
+      //       }
+      //     })
+      //   }else{
+      //     roomArray.push(roomDetails(e._id));
+      //   }
+      //   console.log("one",rooms);
+      //   roomArray.push(roomDetails(e._id));
+      // })
+      // Promise.all(roomArray)
+      // .then(data => {
+      //   return res.status(200).json({roomDetails: data})})
+      // .catch(error => res.status(400).json({message: "Something went wrong",error}))
+
+      rooms.forEach(e => {
+        const {roomName,roomId,participants} = e;
+        if(userRooms && userRooms.length> 0){
+          let isNot = true;
+          userRooms.forEach(ur =>{
+            if(e._id.toString() === ur.roomID.toString()){
+              isNot = false;
+            }
+          })
+          if(isNot){
+            roomArray.push({roomName,roomId,participants});
+          }
+          isNot=true;
+        }else{
+          roomArray.push({roomName,roomId,participants});
+        }
+      })
+
+      return res.status(200).json({roomDetails: roomArray})
+    }
+    if(error) return res.status(400).json({message: "Something went wrong",error});
+  });
+  
 }
 
 exports.getRoomList = (req, res) => {

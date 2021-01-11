@@ -10,8 +10,11 @@ exports.isUserAuthentic = (req,res,next)=>{
                 req.body.userId = user.id;
                 next();
             }
-            // if(user) return(res.status(200).json({token}));
-            if(error) return res.status(400).json(error);
+            
+            if(error){ 
+                console.log(error);
+                return res.status(400).json(error);
+            }
         })
     }
     else{
