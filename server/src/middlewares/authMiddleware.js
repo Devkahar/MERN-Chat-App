@@ -6,7 +6,7 @@ exports.isUserAuthentic = (req,res,next)=>{
     if(token) {
         jwt.verify(token.split(' ')[1],process.env.JWT_CLIENT_SECRATE, (error,user)=>{
             if(user){
-                //console.log(user);
+                console.log(user);
                 req.body.userId = user.id;
                 next();
             }
@@ -45,4 +45,29 @@ exports.isRoomUserAuthentic = (req,res,next)=>{
             }
         }
     })
+}
+
+exports.joinRoom = (req,res,next)=>{
+    try {
+        const {userId,password} = req.body;
+        req.body.participants = [{user: userId}];
+        const {roomId} = req.params;
+        req.body.roomId = roomId;
+        Rooms.findOne({roomId}).exec(async (error,room)=>{
+            if(room){
+                const isAuth = await bcrypt.compare(password,room.password);
+                console.log(isAuth);
+                if(isAuth){
+                    next();
+                }else{
+                    return res.status(400).json({message: "Invalid Password"});
+                }
+            }
+            if(error){
+                return res.status(400).json({message: "Invalid RoomId"});
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({error});
+    }
 }

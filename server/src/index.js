@@ -5,7 +5,7 @@ const env = require('dotenv');
 const {  signIn, userSignup, getUserRooms } = require('./controller/user');
 const { createRoom, addParticipantsInRoom, getRoomList, getGlobalRooms } = require('./controller/room');
 const { addMessage, getMessage } = require('./controller/message');
-const { isUserAuthentic, isRoomUserAuthentic } = require('./middlewares/authMiddleware');
+const { isUserAuthentic, isRoomUserAuthentic, joinRoom } = require('./middlewares/authMiddleware');
 env.config();
 require('./db/connnect')
 app.use(express.json());
@@ -15,6 +15,7 @@ app.post('/api/register',userSignup);
 app.post('/api/signin',signIn);
 app.post('/api/room',isUserAuthentic,createRoom);
 app.post('/api/addtoroom',addParticipantsInRoom);
+app.post('/api/joinRoom/:roomId',isUserAuthentic,joinRoom,addParticipantsInRoom);
 app.post('/api/message/:roomId',isUserAuthentic,isRoomUserAuthentic,addMessage);
 app.get('/api/message/:roomId',isUserAuthentic,isRoomUserAuthentic,getMessage);
 app.post('/api/roomList',getRoomList);

@@ -36,7 +36,7 @@ exports.createRoom = async (req, res) => {
 
 exports.addParticipantsInRoom = async (req, res) => {
   const { roomId, participants } = req.body;
-
+  console.log({ roomId, participants });
   Room.findOne({ roomId }).exec((error, rooms) => {
     if (rooms) {
       const participantsArray = rooms.participants;
@@ -54,9 +54,7 @@ exports.addParticipantsInRoom = async (req, res) => {
       Room.updateOne({ roomId }, { participants: participantsArray }).exec(
         (error,data) => {
           if (data)
-            return res
-              .status(201)
-              .json({ message: "User Added Success Fully" });
+            return res.status(201).json({ message: "User Added Success Fully" });
           console.log(data);
           if (error) return res.status(400).json({ error, message: "Failure" });
         }
@@ -81,6 +79,8 @@ const  roomDetails =  (roomID)=>{
     })
   })
 }
+
+
 
 exports.getGlobalRooms = (req,res)=>{
   let roomArray = [];
