@@ -5,7 +5,7 @@ const env = require('dotenv');
 const {  signIn, userSignup, getUserRooms } = require('./controller/user');
 const { createRoom, addParticipantsInRoom, getRoomList, getGlobalRooms } = require('./controller/room');
 const { addMessage, getMessage } = require('./controller/message');
-const { isUserAuthentic, isRoomUserAuthentic, joinRoom } = require('./middlewares/authMiddleware');
+const { isUserAuthentic, isRoomUserAuthentic, joinRoom, userRoomsMiddleware } = require('./middlewares/authMiddleware');
 env.config();
 require('./db/connnect')
 app.use(express.json());
@@ -20,7 +20,7 @@ app.post('/api/message/:roomId',isUserAuthentic,isRoomUserAuthentic,addMessage);
 app.get('/api/message/:roomId',isUserAuthentic,isRoomUserAuthentic,getMessage);
 app.post('/api/roomList',getRoomList);
 app.get('/api/getInitData',isUserAuthentic,getUserRooms);
-app.get('/api/gobalRooms',getGlobalRooms);
+app.get('/api/gobalRooms',isUserAuthentic,userRoomsMiddleware,getGlobalRooms);
 console.log(new Date().toUTCString(2021, 01, 06, 3, 0, 0).split(' '));
 
 app.listen(2000,()=>{

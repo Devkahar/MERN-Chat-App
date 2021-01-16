@@ -64,7 +64,7 @@ exports.addParticipantsInRoom = async (req, res) => {
   });
 };
 
-const  roomDetails =  (roomID)=>{
+const  roomDetails = (roomID) =>{
 
   return new Promise((resolve,reject)=>{
     Room.findOne({_id: roomID}).populate('creator')
@@ -87,25 +87,6 @@ exports.getGlobalRooms = (req,res)=>{
   const {userRooms} = req.body;
   Room.find({}).exec((error,rooms)=>{
     if(rooms){
-      // let prev = null;
-      // rooms.forEach(e =>{
-      //   if(userRooms.length >0){
-      //     userRooms.map(ur =>{
-      //       if(ur.roomID.toString() !== e._id.toString() && prev !== e._id.toString()){
-      //         roomArray.push(roomDetails(e._id));
-      //         prev = e._id.toString();
-      //       }
-      //     })
-      //   }else{
-      //     roomArray.push(roomDetails(e._id));
-      //   }
-      //   console.log("one",rooms);
-      //   roomArray.push(roomDetails(e._id));
-      // })
-      // Promise.all(roomArray)
-      // .then(data => {
-      //   return res.status(200).json({roomDetails: data})})
-      // .catch(error => res.status(400).json({message: "Something went wrong",error}))
 
       rooms.forEach(e => {
         const {roomName,roomId,participants} = e;
@@ -136,7 +117,6 @@ exports.getRoomList = (req, res) => {
     const {roomIDArray} = req.body;
     //console.log(req.body);
     if(roomIDArray){
-
       const roomArray = [];
       roomIDArray.map(e =>{
         roomArray.push(roomDetails(e.roomID));

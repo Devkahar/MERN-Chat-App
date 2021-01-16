@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 const Rooms = require('../model/rooms');
+const User = require('../model/user');
 exports.isUserAuthentic = (req,res,next)=>{
     const token =  req.headers.authorization;
     if(token) {
@@ -10,10 +11,8 @@ exports.isUserAuthentic = (req,res,next)=>{
                 req.body.userId = user.id;
                 next();
             }
-            
             if(error){ 
-                console.log(error);
-                return res.status(400).json(error);
+                return res.status(404).json(error);
             }
         })
     }
@@ -70,4 +69,18 @@ exports.joinRoom = (req,res,next)=>{
     } catch (error) {
         return res.status(500).json({error});
     }
+}
+
+
+exports.userRoomsMiddleware = (req,res,next)=>{
+    const {userId} = req.body;
+    User.findById({_id: userId}).exec((error,user)=>{
+        if(error) return res.status(400).json({error});
+        if(user){
+            const rooms = user.rooms;
+            console.log(rooms);
+            req.body.userRooms = rooms;
+            next();
+        }
+    })
 }
